@@ -1,4 +1,4 @@
-package tr.edu.metu.sm703.termproject;
+package tr.edu.metu.sm703.termproject.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
