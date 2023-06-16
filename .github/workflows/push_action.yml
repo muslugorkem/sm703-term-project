@@ -11,7 +11,8 @@ name: Push CI/CD
 on:
   push:
     branches:
-      - '**' # Run this workflow on push to any branch
+      - dev
+#      - '**' # Run this workflow on push to any branch TODO make this work
 
 jobs:
   build_and_test:
