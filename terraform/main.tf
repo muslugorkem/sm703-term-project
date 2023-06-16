@@ -12,9 +12,30 @@ provider "aws" {
   region = "eu-west-1"
 }
 
+resource "aws_security_group" "sg" {
+  name        = "sg"
+  description = "Allow inbound traffic"
+
+  ingress {
+    description = "Allow incoming traffic on port 8080"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_instance" "web" {
-  ami           = "ami-01dd271720c1ba44f"
-  instance_type = "t2.micro"
+  ami                    = "ami-01dd271720c1ba44f"
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.sg.id]
 
   user_data = <<-EOF
               #!/bin/bash
