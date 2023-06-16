@@ -28,7 +28,7 @@ jobs:
       - name: Terraform Destroy
         run: |
           terraform init -input=false -no-color -backend-config="key=${{ github.run_number }}/${{ env.environment }}/terraform.tfstate"
-          terraform workspace new ${{ env.environment }}
-          terraform workspace select ${{ env.environment }}
+          terraform workspace new destroy-${{ env.environment }}
+          terraform workspace select destroy-${{ env.environment }}
           terraform destroy -auto-approve -input=false -no-color
         working-directory: ${{ env.TF_WORKING_DIR }}
