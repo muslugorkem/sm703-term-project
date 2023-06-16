@@ -9,9 +9,6 @@
 name: Java CI with Maven
 
 on:
-  push:
-    branches:
-      - '**' # Run this workflow on push to any branch
   pull_request:
     types: [ opened, synchronize, reopened ]
     branches:
