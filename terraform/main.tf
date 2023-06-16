@@ -13,13 +13,13 @@ provider "aws" {
 }
 
 data "aws_security_group" "existing" {
-  name = "sg_name"
+  name = "sg"
 }
 
 resource "aws_security_group" "sg" {
   name        = "sg"
   description = "Allow inbound traffic"
-  count       = data.aws_security_group.existing ? 0 : 1
+  count  = length(data.aws_s3_bucket.existing) > 0 ? 0 : 1
 
 
   ingress {
@@ -46,9 +46,9 @@ resource "aws_instance" "web" {
   user_data = <<-EOF
               #!/bin/bash
               sudo amazon-linux-extras install -y java-openjdk11
-              sudo wget https://term-project-jars.s3.amazonaws.com/your-app.jar -O /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar
+              sudo wget https://term-project-jars.s3.amazonaws.com/term-project-0.0.1-SNAPSHOT.jar -O /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar
               sudo chmod +x /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar
-              sudo echo '@reboot root nohup java -jar /home/ec2-user/your-app.jar &' >> /etc/crontab
+              sudo echo '@reboot root nohup java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar &' >> /etc/crontab
               sudo reboot
               EOF
 }
