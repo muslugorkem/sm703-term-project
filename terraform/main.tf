@@ -12,9 +12,15 @@ provider "aws" {
   region = "eu-west-1"
 }
 
+data "aws_security_group" "existing" {
+  name = "sg_name"
+}
+
 resource "aws_security_group" "sg" {
   name        = "sg"
   description = "Allow inbound traffic"
+  count       = data.aws_security_group.existing ? 0 : 1
+
 
   ingress {
     description = "Allow incoming traffic on port 8080"
@@ -48,7 +54,12 @@ resource "aws_instance" "web" {
 }
 
 
+data "aws_s3_bucket" "existing" {
+  bucket = "term-project-jars"
+}
+
 resource "aws_s3_bucket" "bucket" {
+  count  = data.aws_s3_bucket.existing ? 0 : 1
   bucket = "term-project-jars"
   acl    = "private"
 

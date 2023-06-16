@@ -56,16 +56,6 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: ${{ env.TF_WORKING_DIR }}
 
-      - name: Check if S3 bucket exists
-        id: check-bucket
-        run: |
-          if aws s3api head-bucket --bucket ${{ env.S3_BUCKET }} 2>/dev/null; then
-            echo "::set-output name=exists::true"
-          else
-            echo "::set-output name=exists::false"
-          fi  
-
       - name: Copy JAR to S3
         run: |
           aws s3 cp target/term-project-0.0.1-SNAPSHOT.jar s3://${{ env.S3_BUCKET }}/term-project-0.0.1-SNAPSHOT.jar
-        if: steps.check-bucket.outputs.exists == 'false'
