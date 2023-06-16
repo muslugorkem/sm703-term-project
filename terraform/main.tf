@@ -19,7 +19,7 @@ data "aws_security_group" "existing" {
 resource "aws_security_group" "sg" {
   name        = "sg"
   description = "Allow inbound traffic"
-  count  = length(data.aws_s3_bucket.existing) > 0 ? 0 : 1
+  count       = length(data.aws_security_group.existing.*.id) > 0 ? 0 : 1
 
 
   ingress {
@@ -59,7 +59,7 @@ data "aws_s3_bucket" "existing" {
 }
 
 resource "aws_s3_bucket" "bucket" {
-  count  = data.aws_s3_bucket.existing ? 0 : 1
+  count  = length(data.aws_s3_bucket.existing.*.id) > 0 ? 0 : 1
   bucket = "term-project-jars"
   acl    = "private"
 
