@@ -16,7 +16,7 @@ Resources:
         - subnet-0fd560c0c6a0c389d
         - subnet-023390976852144c4
       SecurityGroups:
-        - sec_gr
+        - sg-06d2e44ebaa5dd6e7
       Listeners:
         - LoadBalancerPort: 80
           InstancePort: 8080
