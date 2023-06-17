@@ -45,24 +45,36 @@ Resources:
       Roles:
         - !Ref MyInstanceRole
 
-  MyInstanceRole:
-    Type: 'AWS::IAM::Role'
+  CodeDeployServiceRole:
+    Type: "AWS::IAM::Role"
     Properties:
-      RoleName: MyInstanceRole
+      RoleName: "CodeDeployServiceRole"
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
-          - Effect: Allow
+          - Effect: "Allow"
             Principal:
               Service:
-                - ec2.amazonaws.com
-                - codedeploy.amazonaws.com
+                - "codedeploy.amazonaws.com"
             Action:
-              - sts:AssumeRole
-      Path: /
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy
-        - arn:aws:iam::aws:policy/AWSCodeDeployFullAccess
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: "CodeDeployAccess"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "s3:Get*"
+                  - "s3:List*"
+                Resource: "*"
+              - Effect: "Allow"
+                Action:
+                  - "ec2:Describe*"
+                  - "autoscaling:Describe*"
+                Resource: "*"
+
 
 
   MyLoadBalancer:
@@ -102,7 +114,7 @@ Resources:
     Type: AWS::CodeDeploy::DeploymentGroup
     Properties:
       ApplicationName: !Ref MyApplication
-      ServiceRoleArn: !GetAtt MyInstanceRole.Arn
+      ServiceRoleArn: !GetAtt CodeDeployServiceRole.Arn
       DeploymentConfigName: 'CodeDeployDefault.OneAtATime'
       DeploymentStyle:
         DeploymentType: 'IN_PLACE'
