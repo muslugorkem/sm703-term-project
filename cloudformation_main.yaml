@@ -32,7 +32,8 @@ Resources:
           !Sub |
           #!/bin/bash -xe
           yum update -y
-          yum install -y java-11-openjdk-devel 
+          yum install -y java-11-openjdk-devel
+          echo 'export WHICH_ENV=prod' >> /etc/environment
 
   MyLoadBalancer:
     Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
