@@ -27,6 +27,16 @@ Resources:
       SecurityGroupIds:
         - !GetAtt MySecurityGroup.GroupId
       IamInstanceProfile: !Ref MyInstanceProfile
+      UserData:
+        Fn::Base64:
+          !Sub |
+          #!/bin/bash -xe
+          yum update -y
+          yum install -y java-11-openjdk-devel
+          aws s3 cp s3://aws-codedeploy-${AWS::Region}/latest/install . --region ${AWS::Region}
+          chmod +x ./install
+          ./install auto
+  
 
   MyInstanceProfile:
     Type: 'AWS::IAM::InstanceProfile'
@@ -38,6 +48,7 @@ Resources:
   MyInstanceRole:
     Type: 'AWS::IAM::Role'
     Properties:
+      RoleName: MyInstanceRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -45,10 +56,14 @@ Resources:
             Principal:
               Service:
                 - ec2.amazonaws.com
+                - codedeploy.amazonaws.com
             Action:
-              - 'sts:AssumeRole'
+              - sts:AssumeRole
+      Path: /
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy'
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy
+        - arn:aws:iam::aws:policy/AWSCodeDeployFullAccess
+
 
   MyLoadBalancer:
     Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
@@ -98,4 +113,4 @@ Resources:
           Type: 'KEY_AND_VALUE'
       AutoRollbackConfiguration:
         Enabled: true
-        Events: ['DEPLOYMENT_FAILURE', 'DEPLOYMENT_STOP_ON_ALARM', 'DEPLOYMENT_STOP_ON_REQUEST']
+        Events: [ 'DEPLOYMENT_FAILURE', 'DEPLOYMENT_STOP_ON_ALARM', 'DEPLOYMENT_STOP_ON_REQUEST' ]
