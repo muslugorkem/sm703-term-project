@@ -22,7 +22,7 @@ Resources:
   MyQAEC2Instance:
     Type: 'AWS::EC2::Instance'
     Properties:
-      ImageId: ami-00b1c9efd33fda707grkm
+      ImageId: ami-00b1c9efd33fda707
       InstanceType: t2.micro
       KeyName: sm703_ec2
       SecurityGroupIds:
