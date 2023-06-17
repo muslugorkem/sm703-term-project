@@ -43,7 +43,7 @@ Resources:
     Properties:
       Path: "/"
       Roles:
-        - !Ref MyInstanceRole
+        - !Ref CodeDeployServiceRole
 
   CodeDeployServiceRole:
     Type: "AWS::IAM::Role"
