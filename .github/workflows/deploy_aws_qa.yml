@@ -66,5 +66,6 @@ jobs:
           scp -o StrictHostKeyChecking=no target/term-project-0.0.1-SNAPSHOT.jar ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME_QA }}:/home/ec2-user/term-project-0.0.1-SNAPSHOT.jar
 
       - name: Start application on EC2 instance
+        timeout-minutes: 0.5
         run: |
             ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME_QA }} "nohup java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar --WHICH_ENV=qa &"
