@@ -26,7 +26,7 @@ Resources:
       InstanceType: t2.micro
       KeyName: sm703_ec2
       SecurityGroups:
-        - !Ref MySecurityGroup
+        - !GetAtt MySecurityGroup.GroupId
 
   MyLoadBalancer:
     Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
@@ -36,7 +36,7 @@ Resources:
         - subnet-0fd560c0c6a0c389d
         - subnet-023390976852144c4
       SecurityGroups:
-        - !Ref MySecurityGroup
+        - !GetAtt MySecurityGroup.GroupId
       Listeners:
         - LoadBalancerPort: 80
           InstancePort: 8080
