@@ -65,8 +65,10 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no target/term-project-0.0.1-SNAPSHOT.jar ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME_QA }}:/home/ec2-user/term-project-0.0.1-SNAPSHOT.jar
 
-      - name: Start application on EC2 instance
+      - name: Start application on EC2 QA instance
         run: |
           ssh -o StrictHostKeyChecking=no -f ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME_QA }} "
-            export WHICH_ENV=qa
-            nohup java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar > output.log &"
+            echo 'export WHICH_ENV=dev' > setenv.sh
+            echo 'nohup java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar > output.log &' >> setenv.sh
+            chmod +x setenv.sh
+            ./setenv.sh"
