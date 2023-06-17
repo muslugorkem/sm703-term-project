@@ -1,5 +1,4 @@
 Resources:
-
   MySecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -27,6 +26,29 @@ Resources:
       KeyName: sm703_ec2
       SecurityGroupIds:
         - !GetAtt MySecurityGroup.GroupId
+      IamInstanceProfile: !Ref MyInstanceProfile
+
+  MyInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref MyInstanceRole
+
+  MyInstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy'
 
   MyLoadBalancer:
     Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
@@ -49,3 +71,31 @@ Resources:
         Timeout: '5'
       Instances:
         - !Ref MyEC2Instance
+
+  MyBucket:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: term-project-bucket
+
+  MyApplication:
+    Type: AWS::CodeDeploy::Application
+    Properties:
+      ComputePlatform: 'Server'
+
+  MyDeploymentGroup:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    Properties:
+      ApplicationName: !Ref MyApplication
+      ServiceRoleArn: !GetAtt MyInstanceRole.Arn
+      DeploymentConfigName: 'CodeDeployDefault.OneAtATime'
+      DeploymentStyle:
+        DeploymentType: 'IN_PLACE'
+        DeploymentOption: 'WITHOUT_TRAFFIC_CONTROL'
+      Ec2TagFilters:
+        - Key: 'Name'
+          Value: 'MyEC2Instance'
+          Type: 'KEY_AND_VALUE'
+      AutoRollbackConfiguration:
+        Enabled: true
+        Events: ['DEPLOYMENT_FAILURE', 'DEPLOYMENT_STOP_ON_ALARM', 'DEPLOYMENT_STOP_ON_REQUEST']

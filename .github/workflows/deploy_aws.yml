@@ -56,20 +56,26 @@ jobs:
         run: |
           aws cloudformation describe-stack-events --stack-name spring-boot-app-prod  
 
-      - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #      - name: Install SSH key
+      #        uses: webfactory/ssh-agent@v0.5.3
+      #        with:
+      #          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #
+      #      - name: Copy JAR to EC2 instance
+      #        run: |
+      #          scp -o StrictHostKeyChecking=no target/term-project-0.0.1-SNAPSHOT.jar ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME }}:/home/ec2-user/term-project-0.0.1-SNAPSHOT.jar
+      #
+      #      - name: Install Java on EC2 instance
+      #        run: |
+      #          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME }} "sudo yum update -y"
+      #          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME }} "sudo yum install -y java-11-amazon-corretto-devel"
+      #
+      #      - name: Start application on EC2 instance
+      #        run: |
+      #          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME }} "nohup java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar > output.log &"
 
-      - name: Copy JAR to EC2 instance
-        run: |
-          scp -o StrictHostKeyChecking=no target/term-project-0.0.1-SNAPSHOT.jar ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME }}:/home/ec2-user/term-project-0.0.1-SNAPSHOT.jar
+      - name: Upload to S3
+        run: aws s3 cp target/term-project-0.0.1-SNAPSHOT.jar s3://term-project-bucket/
 
-      - name: Install Java on EC2 instance
-        run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME }} "sudo yum update -y"
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME }} "sudo yum install -y java-11-amazon-corretto-devel"
-
-      - name: Start application on EC2 instance
-        run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME }} "nohup java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar > output.log &"
+      - name: Deploy to EC2 instance using CodeDeploy
+        run: aws deploy create-deployment --application-name MyApplication --deployment-group-name MyDeploymentGroup --s3-location bucket=my-application-bucket,bundleType=jar,key=term-project-0.0.1-SNAPSHOT.jar
