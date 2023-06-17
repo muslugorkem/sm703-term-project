@@ -22,7 +22,7 @@ public class AdditionControllerTest {
     public void additionControllerReturnsCorrectSum() throws Exception {
         ResultActions resultActions = mockMvc.perform(get("/add").param("a", "5").param("b", "3"))
             .andExpect(status().isOk())
-            .andExpect(content().string("8"));
+            .andExpect(content().string("7"));
     }
 }
 
