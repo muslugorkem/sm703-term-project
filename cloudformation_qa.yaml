@@ -26,7 +26,7 @@ Resources:
       InstanceType: t2.micro
       KeyName: sm703_ec2
       SecurityGroupIds:
-        - !GetAtt MySecurityGroup.GroupId
+        - !GetAtt MyQASecurityGroup.GroupId
       UserData:
         Fn::Base64:
           !Sub |
