@@ -41,7 +41,8 @@ jobs:
           STACK_STATUS=$(aws cloudformation describe-stacks --stack-name spring-boot-app-prod --query "Stacks[0].StackStatus" --output text)
           if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
             aws cloudformation delete-stack --stack-name spring-boot-app-prod
-          fi      
+            aws cloudformation wait stack-delete-complete --stack-name spring-boot-app-prod
+          fi     
 
       - name: Deploy to AWS using CloudFormation
         run: |
