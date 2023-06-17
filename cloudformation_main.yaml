@@ -1,6 +1,6 @@
 Resources:
 
-  MyQASecurityGroup:
+  MySecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: 'Security group for the EC2 instance'
@@ -19,7 +19,7 @@ Resources:
           ToPort: 22
           CidrIp: 0.0.0.0/0
 
-  MyQAEC2Instance:
+  MyEC2Instance:
     Type: 'AWS::EC2::Instance'
     Properties:
       ImageId: ami-00b1c9efd33fda707
@@ -34,7 +34,7 @@ Resources:
           yum update -y
           yum install -y java-11-openjdk-devel 
 
-  MyQALoadBalancer:
+  MyLoadBalancer:
     Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
     Properties:
       Subnets:
@@ -42,7 +42,7 @@ Resources:
         - subnet-0fd560c0c6a0c389d
         - subnet-023390976852144c4
       SecurityGroups:
-        - !GetAtt MyQASecurityGroup.GroupId
+        - !GetAtt MySecurityGroup.GroupId
       Listeners:
         - LoadBalancerPort: 80
           InstancePort: 8080
@@ -54,4 +54,4 @@ Resources:
         Interval: '30'
         Timeout: '5'
       Instances:
-        - !Ref MyQAEC2Instance
+        - !Ref MyEC2Instance
