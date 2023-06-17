@@ -1,6 +1,6 @@
 Resources:
 
-  SecurityGroup:
+  MySecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: 'Security group for the EC2 instance'
@@ -19,16 +19,16 @@ Resources:
           ToPort: 22
           CidrIp: 0.0.0.0/0
 
-  EC2Instance:
+  MyEC2Instance:
     Type: 'AWS::EC2::Instance'
     Properties:
       ImageId: ami-00b1c9efd33fda707
       InstanceType: t2.micro
       KeyName: sm703_ec2
       SecurityGroups:
-        - !Ref SecurityGroup
+        - !Ref MySecurityGroup
 
-  LoadBalancer:
+  MyLoadBalancer:
     Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
     Properties:
       Subnets:
@@ -48,4 +48,4 @@ Resources:
         Interval: '30'
         Timeout: '5'
       Instances:
-        - !Ref EC2Instance
+        - !Ref MyEC2Instance
