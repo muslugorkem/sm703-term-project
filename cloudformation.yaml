@@ -25,7 +25,7 @@ Resources:
       ImageId: ami-00b1c9efd33fda707
       InstanceType: t2.micro
       KeyName: sm703_ec2
-      SecurityGroups:
+      SecurityGroupIds:
         - !GetAtt MySecurityGroup.GroupId
 
   MyLoadBalancer:
@@ -36,7 +36,7 @@ Resources:
         - subnet-0fd560c0c6a0c389d
         - subnet-023390976852144c4
       SecurityGroups:
-        - !GetAtt MySecurityGroup.GroupId
+        - !GetAtt MySecurityGroup.GroupName
       Listeners:
         - LoadBalancerPort: 80
           InstancePort: 8080
