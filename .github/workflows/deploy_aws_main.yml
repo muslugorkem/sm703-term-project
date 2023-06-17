@@ -46,7 +46,7 @@ jobs:
       - name: Deploy to AWS using CloudFormation
         run: |
           aws cloudformation deploy \
-            --template-file cloudformation.yaml \
+            --template-file cloudformation_main.yaml \
             --stack-name spring-boot-app-prod \
             --capabilities CAPABILITY_IAM
 
