@@ -73,4 +73,4 @@ jobs:
       - name: Start application on EC2 PROD instance
         timeout-minutes: 0.5
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME }} "nohup java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar --WHICH_ENV=Prod &"
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME }} "nohup java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar --WHICH_ENV=Prod > /dev/null 2>&1 &"
