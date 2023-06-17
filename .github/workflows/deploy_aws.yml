@@ -49,7 +49,8 @@ jobs:
           aws cloudformation deploy \
             --template-file cloudformation.yaml \
             --stack-name spring-boot-app-prod \
-            --capabilities CAPABILITY_IAM
+            --capabilities CAPABILITY_IAM \
+            --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
 
       - name: Describe stack events if deployment failed
         if: failure()
