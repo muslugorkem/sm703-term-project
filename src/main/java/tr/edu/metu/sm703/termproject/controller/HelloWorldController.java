@@ -12,7 +12,7 @@ public class HelloWorldController {
 
     @GetMapping("/hello")
     public String helloWorld() {
-        return "Merhaba World from: " + environment +".";
+        return "Hi World from: " + environment +".";
     }
 }
 
