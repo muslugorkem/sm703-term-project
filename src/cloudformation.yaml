@@ -1,0 +1,31 @@
+Resources:
+  EC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: ami-00b1c9efd33fda707
+      InstanceType: t2.micro
+      KeyName: sm703_ec2
+      SecurityGroups:
+        - sg-06d2e44ebaa5dd6e7
+
+  LoadBalancer:
+    Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
+    Properties:
+      Subnets:
+        - subnet-0ae18efa83580a717
+        - subnet-0fd560c0c6a0c389d
+        - subnet-023390976852144c4
+      SecurityGroups:
+        - sec_gr
+      Listeners:
+        - LoadBalancerPort: 80
+          InstancePort: 8080
+          Protocol: HTTP
+      HealthCheck:
+        Target: HTTP:8080/
+        HealthyThreshold: '3'
+        UnhealthyThreshold: '5'
+        Interval: '30'
+        Timeout: '5'
+      Instances:
+        - !Ref MyEC2Instance
