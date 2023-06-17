@@ -26,6 +26,13 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Delete existing stack if it's in ROLLBACK_COMPLETE state
+        run: |
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name spring-boot-app-prod --query "Stacks[0].StackStatus" --output text)
+          if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
+            aws cloudformation delete-stack --stack-name spring-boot-app-prod
+          fi    
+
       - name: Build with Maven
         run: mvn clean install -DskipTests #TODO remove skip
 
