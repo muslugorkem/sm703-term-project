@@ -36,10 +36,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
-      - name: List all files
-        run: |
-          ls -la
-
       - name: Deploy to AWS using CloudFormation
         run: |
           aws cloudformation deploy \
