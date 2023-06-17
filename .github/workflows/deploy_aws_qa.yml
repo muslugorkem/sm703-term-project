@@ -66,6 +66,7 @@ jobs:
           scp -o StrictHostKeyChecking=no target/term-project-0.0.1-SNAPSHOT.jar ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME_QA }}:/home/ec2-user/term-project-0.0.1-SNAPSHOT.jar
 
       - name: Stop existing application on EC2 QA instance
+        continue-on-error: true
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME_QA }} "
             pkill -f 'java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar' || true"
