@@ -28,4 +28,4 @@ Resources:
         Interval: '30'
         Timeout: '5'
       Instances:
-        - !Ref MyEC2Instance
+        - !Ref EC2Instance
