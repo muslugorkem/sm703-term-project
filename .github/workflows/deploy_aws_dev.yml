@@ -1,0 +1,77 @@
+name: Deploy to AWS For Development
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - dev
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build with Maven
+        run: mvn clean install -DskipTests #TODO remove skip yes
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Delete existing stack if it's in ROLLBACK_COMPLETE state
+        run: |
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name spring-boot-app-dev --query "Stacks[0].StackStatus" --output text || echo "")
+          if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
+            aws cloudformation delete-stack --stack-name spring-boot-app-dev
+            aws cloudformation wait stack-delete-complete --stack-name spring-boot-app-dev
+          fi    
+
+      - name: Deploy to AWS using CloudFormation
+        run: |
+          aws cloudformation deploy \
+            --template-file cloudformation_dev.yaml \
+            --stack-name spring-boot-app-dev \
+            --capabilities CAPABILITY_IAM
+
+      - name: Describe stack events if deployment failed
+        if: failure()
+        run: |
+          aws cloudformation describe-stack-events --stack-name spring-boot-app-dev  
+
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Copy JAR to EC2 DEV instance
+        run: |
+          scp -o StrictHostKeyChecking=no target/term-project-0.0.1-SNAPSHOT.jar ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME_DEV }}:/home/ec2-user/term-project-0.0.1-SNAPSHOT.jar
+
+      - name: Stop existing application on EC2 DEV instance
+        continue-on-error: true
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME_DEV }} "
+            pkill -f 'java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar' || true"
+
+      - name: Start application on EC2 DEV instance
+        timeout-minutes: 0.5
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS_NAME_DEV }} "nohup java -jar /home/ec2-user/term-project-0.0.1-SNAPSHOT.jar --WHICH_ENV=Development > /dev/null 2>&1 &"
