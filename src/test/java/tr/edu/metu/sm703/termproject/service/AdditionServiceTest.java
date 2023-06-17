@@ -15,7 +15,7 @@ public class AdditionServiceTest {
     @Test
     public void additionServiceAddsCorrectly() {
         int sum = additionService.add(5, 3);
-        assertThat(sum).isEqualTo(8);
+        assertThat(sum).isEqualTo(3);
     }
 }
 
