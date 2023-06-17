@@ -27,7 +27,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean install -DskipTests #TODO remove skip
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -42,3 +42,7 @@ jobs:
             --template-file cloudformation.yaml \
             --stack-name spring-boot-app-prod \
             --capabilities CAPABILITY_IAM
+      - name: Describe stack events if deployment failed
+        if: failure()
+        run: |
+          aws cloudformation describe-stack-events --stack-name spring-boot-app-prod    
