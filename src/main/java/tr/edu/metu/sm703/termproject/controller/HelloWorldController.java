@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloWorldController {
 
-    @Value("${WHICH_ENV}")
+    @Value("${WHICH_ENV:hello1}")
     private String environment;
 
     @GetMapping("/hello")
