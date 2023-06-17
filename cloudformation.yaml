@@ -5,7 +5,7 @@ Resources:
       ImageId: ami-00b1c9efd33fda707
       InstanceType: t2.micro
       KeyName: sm703_ec2
-      SecurityGroups:
+      SecurityGroupIds:
         - sg-06d2e44ebaa5dd6e7
 
   LoadBalancer:
@@ -15,7 +15,7 @@ Resources:
         - subnet-0ae18efa83580a717
         - subnet-0fd560c0c6a0c389d
         - subnet-023390976852144c4
-      SecurityGroups:
+      SecurityGroupIds:
         - sg-06d2e44ebaa5dd6e7
       Listeners:
         - LoadBalancerPort: 80
