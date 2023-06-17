@@ -38,11 +38,11 @@ jobs:
 
       - name: Delete existing stack if it's in ROLLBACK_COMPLETE state
         run: |
-          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name spring-boot-app-prod --query "Stacks[0].StackStatus" --output text)
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name spring-boot-app-prod --query "Stacks[0].StackStatus" --output text || echo "")
           if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
             aws cloudformation delete-stack --stack-name spring-boot-app-prod
             aws cloudformation wait stack-delete-complete --stack-name spring-boot-app-prod
-          fi     
+          fi    
 
       - name: Deploy to AWS using CloudFormation
         run: |
@@ -50,6 +50,7 @@ jobs:
             --template-file cloudformation.yaml \
             --stack-name spring-boot-app-prod \
             --capabilities CAPABILITY_IAM
+
       - name: Describe stack events if deployment failed
         if: failure()
         run: |
